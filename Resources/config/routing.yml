@@ -1,0 +1,3 @@
+AizattoHermesBundle_homepage:
+    pattern:  /{id}
+    defaults: { _controller: AizattoHermesBundle:Default:show }

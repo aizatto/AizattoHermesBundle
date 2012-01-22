@@ -1,0 +1,11 @@
+parameters:
+#    aizatto_hermes.example.class: Aizatto\Bundle\HermesBundle\Example
+
+services:
+  hermes:
+    class: Aizatto\Bundle\HermesBundle\AssetManager
+    arguments:
+      - %kernel.root_dir%
+      - %hermes%
+#        class: %aizatto_hermes.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
