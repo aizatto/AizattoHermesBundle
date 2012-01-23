@@ -65,7 +65,6 @@ class DumpCommand extends ContainerAwareCommand
       }
 
       $provides = $value['provides'];
-      unset($value['provides']);
 
       $hash_map[$provides] = $value;
       $resource_graph[$provides] = $value['requires'];
