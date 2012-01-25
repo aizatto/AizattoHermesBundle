@@ -19,7 +19,17 @@ class Configuration implements ConfigurationInterface
   public function getConfigTreeBuilder()
   {
     $treeBuilder = new TreeBuilder();
-    $rootNode = $treeBuilder->root('aizatto_hermes', 'variable');
+    $rootNode = $treeBuilder->root('aizatto_hermes');
+
+    $rootNode
+      ->children()
+        ->variableNode('paths')
+        ->end()
+        ->variableNode('scripts')
+        ->end()
+        ->variableNode('stylesheets')
+        ->end()
+      ->end();
 
     // Here you should define the parameters that are allowed to
     // configure your bundle. See the documentation linked above for

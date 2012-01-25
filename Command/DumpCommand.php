@@ -27,9 +27,6 @@ class DumpCommand extends ContainerAwareCommand
     parent::initialize($input, $output);
   }
 
-  /**
-   * TODO use custom paths to search for stuff instead of the root directory
-   */
   protected function execute(InputInterface $input, OutputInterface $output) {
     phutil_require_module('phutil', 'filesystem');
     phutil_require_module('phutil', 'filesystem/filefinder');
@@ -57,12 +54,19 @@ class DumpCommand extends ContainerAwareCommand
   }
 
   protected function find($root, $suffix, $output) {
-    $files = id(new FileFinder($root))
+    $finder = id(new FileFinder($root))
       ->withType('f')
       ->withSuffix($suffix)
       ->withFollowSymlinks(true)
-      ->setGenerateChecksums(true)
-      ->find();
+      ->setGenerateChecksums(true);
+
+    $paths = $this->getContainer()->getParameter('hermes.paths');
+    foreach ($paths as $path) {
+      $path = '*/'.$path.'*.'.$suffix;
+      $finder->withPath($path);
+    }
+
+    $files = $finder->find();
 
     $output->writeln(sprintf(
       "Processing <info>%d</info> %s files",
@@ -97,6 +101,7 @@ class DumpCommand extends ContainerAwareCommand
       $suffix));
 
     $hermes_resource_graph = new ResourceGraph();
+    $hermes_resource_graph->setResourceGraph($resource_graph);
     $hermes_resource_graph->addNodes($resource_graph);
     $hermes_resource_graph->loadGraph();
     foreach ($resource_graph as $provides => $requires) {
