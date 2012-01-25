@@ -35,8 +35,26 @@ class AssetManager {
     $this->javascripts[$asset] = true;
   }
 
+  public function requireCSS($asset) {
+    $asset = $asset.'-css';
+    if (!isset($this->assets[$asset])) {
+      throw new \Exception(sprintf('Unexpected asset: %s', $asset));
+    }
+
+    if (isset($this->stylesheets[$asset])) {
+      return true;
+    }
+
+    $this->stylesheets[$asset] = true;
+  }
+
   public function flushJS() {
     $map = $this->resolveResources(array_keys($this->javascripts));
+    return array_keys($map);
+  }
+
+  public function flushCSS() {
+    $map = $this->resolveResources(array_keys($this->stylesheets));
     return array_keys($map);
   }
 
