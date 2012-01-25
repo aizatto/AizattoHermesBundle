@@ -39,14 +39,35 @@ class DumpCommand extends ContainerAwareCommand
     $root = Filesystem::resolvePath($root.'/../');
 
     $output->writeln("Finding static resources...");
+    $scripts = $this->find($root, 'js', $output);
+    $stylesheets = $this->find($root, 'css', $output);
+
+    $dump = array(
+      'aizatto_hermes' => array(
+        'scripts' => $scripts,
+        'stylesheets' => $stylesheets,
+      ),
+    );
+
+    $dumper = new Yaml\Dumper();
+    $yaml = $dumper->dump($dump, 6);
+    $path = 'app/config/hermes.yml';
+    file_put_contents($root.'/'.$path, $yaml);
+    $output->writeln(sprintf('Updated config: <info>%s</info>', $path));
+  }
+
+  protected function find($root, $suffix, $output) {
     $files = id(new FileFinder($root))
       ->withType('f')
-      ->withSuffix('js')
-      ->withSuffix('css')
+      ->withSuffix($suffix)
       ->withFollowSymlinks(true)
       ->setGenerateChecksums(true)
       ->find();
-    $output->writeln(sprintf("Processing <info>%d</info> files", count($files)));
+
+    $output->writeln(sprintf(
+      "Processing <info>%d</info> %s files",
+      count($files),
+      $suffix));
 
     $file_map = array();
     $length = strlen($root) + 1;
@@ -70,7 +91,10 @@ class DumpCommand extends ContainerAwareCommand
       $resource_graph[$provides] = $value['requires'];
     }
 
-    $output->writeln(sprintf("Found <info>%d</info> files", count($hash_map)));
+    $output->writeln(sprintf(
+      "Found <info>%d</info> %s files",
+      count($hash_map),
+      $suffix));
 
     $hermes_resource_graph = new ResourceGraph();
     $hermes_resource_graph->addNodes($resource_graph);
@@ -84,11 +108,7 @@ class DumpCommand extends ContainerAwareCommand
       }
     }
 
-    $dumper = new Yaml\Dumper();
-    $yaml = $dumper->dump(array('aizatto_hermes' => $hash_map), 4);
-    $path = 'app/config/hermes.yml';
-    file_put_contents($root.'/'.$path, $yaml);
-    $output->writeln(sprintf('Updated config: <info>%s</info>', $path));
+    return $hash_map;
   }
 
   private function processPath($name, $path, $output) {

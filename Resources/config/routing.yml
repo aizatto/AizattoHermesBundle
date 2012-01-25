@@ -1,3 +1,7 @@
-hermes:
-    pattern:  /{id}
-    defaults: { _controller: AizattoHermesBundle:Default:show }
+hermes_css:
+    pattern:  /css/{id}
+    defaults: { _controller: AizattoHermesBundle:Default:show, type: css }
+
+hermes_js:
+    pattern:  /js/{id}
+    defaults: { _controller: AizattoHermesBundle:Default:show, type: js }

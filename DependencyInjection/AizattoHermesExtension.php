@@ -21,8 +21,14 @@ class AizattoHermesExtension extends Extension
   {
     $configuration = new Configuration();
     $config = $this->processConfiguration($configuration, $configs);
-    $config = ipull($config, null, 'provides');
-    $container->setParameter('hermes', $config);
+    $scripts = idx($config, 'scripts', array());
+    $stylesheets = idx($config, 'stylesheets', array());
+
+    $assets = array(
+      'scripts' => ipull($scripts, null, 'provides'),
+      'stylesheets' => ipull($stylesheets, null, 'provides'),
+    );
+    $container->setParameter('hermes', $assets);
 
     $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
     $loader->load('services.yml');

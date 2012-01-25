@@ -12,27 +12,23 @@ class DefaultController extends Controller
    * TODO cache headers
    * TODO mimetype
    */
-  public function showAction($id)
+  public function showAction($id, $type)
   {
-    $file = $this->get('hermes')->get($id);
-    if (!$file) {
-      throw $this->createNotFoundException(sprintf(
-        'Unknown resource: %s', $id));
-    }
-
-    $type = 'js';
-    if (preg_match('/\.css$/', $file)) {
-      $type = 'css';
-    }
-
     switch ($type) {
       case 'js':
         $type = 'application/x-javascript; charset=utf-8';
+        $file = $this->get('hermes')->scripts->get($id);
         break;
 
       case 'css':
         $type = 'text/css';
+        $file = $this->get('hermes')->stylesheets->get($id);
         break;
+    }
+
+    if (!$file) {
+      throw $this->createNotFoundException(sprintf(
+        'Unknown resource: %s', $id));
     }
 
     $expires = 60*60*24*365;
