@@ -40,7 +40,7 @@ class AssetManagerContainer {
 
   public function flush() {
     $map = $this->resolveResources(array_keys($this->symbols));
-    return array_keys($map);
+    return $map;
   }
 
   public function resolveResources(array $resources) {

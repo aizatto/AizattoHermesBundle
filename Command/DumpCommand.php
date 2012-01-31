@@ -78,18 +78,22 @@ class DumpCommand extends ContainerAwareCommand
     foreach ($files as $path => $hash) {
       $path = substr($path, $length);
       $name = '/'.Filesystem::readablePath($path, $root);
-      $file_map[$name] = $path;
+      $file_map[$name] = array(
+        'path' => $path,
+        'hash' => $hash,
+      );
     }
 
     $hash_map = array();
     $resource_graph = array();
-    foreach ($file_map as $name => $path) {
-      $value = $this->processPath($name, $path, $output);
+    foreach ($file_map as $name => $info) {
+      $value = $this->processPath($name, $info['path'], $output);
       if (!$value) {
         continue;
       }
 
       $provides = $value['provides'];
+      $value['hash'] = $info['hash'];
 
       $hash_map[$provides] = $value;
       $resource_graph[$provides] = $value['requires'];

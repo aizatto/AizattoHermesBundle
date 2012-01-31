@@ -14,6 +14,10 @@ class DefaultController extends Controller
    */
   public function showAction($id, $type)
   {
+    if ($pos = strpos($id, '.')) {
+      $id = substr($id, 0, $pos);
+    }
+
     switch ($type) {
       case 'js':
         $type = 'application/x-javascript; charset=utf-8';
