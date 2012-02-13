@@ -27,6 +27,7 @@ class AizattoHermesExtension extends Extension
     $params = array(
       'scripts' => ipull($scripts, null, 'provides'),
       'stylesheets' => ipull($stylesheets, null, 'provides'),
+      'packages' => idx($config, 'packages', array()),
     );
     $container->setParameter('hermes', $params);
     $container->setParameter('hermes.paths', idx($config, 'paths', array()));

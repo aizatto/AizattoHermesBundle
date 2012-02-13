@@ -29,6 +29,8 @@ class Configuration implements ConfigurationInterface
         ->end()
         ->variableNode('stylesheets')
         ->end()
+        ->variableNode('packages')
+        ->end()
       ->end();
 
     // Here you should define the parameters that are allowed to

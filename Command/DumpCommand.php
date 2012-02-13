@@ -15,6 +15,7 @@ use Symfony\Component\Yaml;
 
 class DumpCommand extends ContainerAwareCommand
 {
+
   protected function configure()
   {
     $this
