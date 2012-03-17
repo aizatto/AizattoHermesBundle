@@ -16,14 +16,20 @@ class AssetManager {
    * TODO separate JS and CSS assets
    */
   public function __construct($root_dir,
-                              $assets,
+                              $config,
                               Router $router,
                               $assets_base_url) {
     $root_dir = $root_dir.'/../';
-    $this->scripts = new AssetManagerContainer($root_dir, $assets['scripts']);
-    $this->stylesheets = new AssetManagerContainer($root_dir, $assets['stylesheets']);
+    $this->scripts = $this->constructAssetManagerContainer($root_dir, $config, 'scripts');
+    $this->stylesheets = $this->constructAssetManagerContainer($root_dir, $config, 'stylesheets');
     $this->router = $router;
     $this->assets_base_url = $assets_base_url;
+  }
+
+  private function constructAssetManagerContainer($root_dir, $config, $type) {
+    $assets = idx($config, $type, array());
+    $packages = idx(idx($config, 'packages', array()), $type, array());
+    return new AssetManagerContainer($root_dir, $assets, $packages);
   }
 
   public function getURL($type, $asset) {

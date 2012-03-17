@@ -7,10 +7,11 @@ class AssetManagerContainer {
   protected
     $root_dir,
     $assets,
+    $packages,
     $symbols,
     $rendered;
 
-  public function __construct($root_dir, $assets) {
+  public function __construct($root_dir, $assets, $packages) {
     $this->root_dir = $root_dir;
     $this->assets = $assets;
     $this->symbols = array();

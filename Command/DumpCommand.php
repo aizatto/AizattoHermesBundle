@@ -13,8 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml;
 
-class DumpCommand extends ContainerAwareCommand
-{
+class DumpCommand extends ContainerAwareCommand {
 
   protected function configure()
   {
@@ -36,9 +35,12 @@ class DumpCommand extends ContainerAwareCommand
     $root = $this->getContainer()->get('kernel')->getRootDir();
     $root = Filesystem::resolvePath($root.'/../');
 
+    $config = $this->getContainer()->getParameter('hermes');
+    $packages = $config['packages'];
+
     $output->writeln("Finding static resources...");
-    $scripts = $this->find($root, 'js', $output);
-    $stylesheets = $this->find($root, 'css', $output);
+    $scripts = $this->find($root, 'js', $output, idx($packages, 'scripts', array()));
+    $stylesheets = $this->find($root, 'css', $output, idx($packages, 'stylesheets', array()));
 
     $dump = array(
       'aizatto_hermes' => array(
@@ -54,12 +56,23 @@ class DumpCommand extends ContainerAwareCommand
     $output->writeln(sprintf('Updated config: <info>%s</info>', $path));
   }
 
-  protected function find($root, $suffix, $output) {
+  protected function find($root, $suffix, $output, $packages) {
     $finder = id(new FileFinder($root))
       ->withType('f')
       ->withSuffix($suffix)
       ->withFollowSymlinks(true)
       ->setGenerateChecksums(true);
+
+    $reverse_packages = array();
+    foreach ($packages as $package) {
+      foreach ($package['requires'] as $require) {
+        if (!isset($reverse_packages[$require])) {
+          $reverse_packages[$require] = array();
+        }
+
+        $reverse_packages[$require][] = $package['provides'];
+      }
+    }
 
     $paths = $this->getContainer()->getParameter('hermes.paths');
     foreach ($paths as $path) {
@@ -95,6 +108,8 @@ class DumpCommand extends ContainerAwareCommand
 
       $provides = $value['provides'];
       $value['hash'] = $info['hash'];
+
+      $value['packages'] = idx($reverse_packages, $provides, array());
 
       $hash_map[$provides] = $value;
       $resource_graph[$provides] = $value['requires'];
